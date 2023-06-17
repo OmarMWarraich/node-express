@@ -1,30 +1,23 @@
 const express = require('express');
 const app = express();
+const { people } = require('./data');
 
-const logger = require('./logger');
-const authorize = require('./authorize');
+// static assets
+app.use(express.static('./methods-public'));
 
-// req => middleware => res
+// parse form data
+app.use(express.urlencoded({ extended: false }));
 
-// 1. use vs route
-// 2. options - our own / express / third party
-
-// app.use([ authorize, logger ]);
-
-app.get('/', (req, res) => {
-    res.status(200).send('Home Page');
+app.get('/api/people', (req, res) => {
+    res.status(200).json({ success: true, data: people });
 });
 
-app.get('/about', (req, res) => {
-    res.status(200).send('About Page');
-});
-
-app.get('/api/products', (req, res) => {
-    res.send('Products');
-});
-
-app.get('/api/items', [logger, authorize] ,(req, res) => {
-    res.send('Items');
+app.post('/login', (req, res) => {
+    const { name } = req.body;
+    if (name) {
+        return res.status(200).send(`Welcome ${name}`);
+    }
+    res.status(401).send('Please Provide Credentials');
 });
 
 app.listen(5000, () => {
