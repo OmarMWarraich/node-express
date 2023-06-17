@@ -1,22 +1,17 @@
 const express = require('express');
-const path = require('path');
 const app = express();
+const { products } = require('./data');
 
-// setup static and middleware
-app.use(express.static('./navbar-app/public'));
-
-/* app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, './navbar-app/index.html'));
-    // Adding to static folder
-    // SSR
-}); */
-
-app.get('/about', (req, res) => {
-    res.status(200).send('About Page');
+app.get('/', (req, res) => {
+    res.send('<h1>Home Page</h1><a href="/api/products">products</a>');
 });
 
-app.all('*', (req, res) => {
-    res.status(404).send('<h1>Resource not found</h1>');
+app.get('/api/products', (req, res) => {
+    const newProducts = products.map((product) => {
+        const { id, name, image } = product;
+        return { id, name, image };
+    });
+    res.json(newProducts);
 });
 
 app.listen(5000, () => {
